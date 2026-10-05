@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Falling For Siddhi 🪷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rose:#ff5c8a;
+    --deep:#8e1b4a;
+    --blush:#ffe3ec;
+    --cream:#fff7f9;
+    --ink:#4a1030;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:'Cormorant Garamond',Georgia,serif;
+    color:var(--ink);
+    background:linear-gradient(135deg,#ffd1dc 0%,#ff9ebb 40%,#d9467c 100%);
+    background-attachment:fixed;
+    overflow:hidden;
+  }
+
+  /* ---------- Hearts layer ---------- */
+  #hearts{position:fixed;inset:0;z-index:50;pointer-events:none;overflow:hidden;}
+  .heart{
+    position:absolute;left:0;top:0;line-height:1;
+    pointer-events:auto;cursor:pointer;user-select:none;-webkit-user-select:none;
+    will-change:transform;touch-action:manipulation;
+    filter:drop-shadow(0 2px 4px rgba(142,27,74,.35));
+  }
+  .siddhi-heart{
+    display:flex;flex-direction:column;align-items:center;
+    animation:pulse .6s ease-in-out infinite alternate;
+  }
+  .siddhi-heart span{
+    font-family:'Great Vibes',cursive;font-size:1.7rem;color:#fff;
+    text-shadow:0 2px 8px rgba(142,27,74,.8);margin-top:-6px;
+  }
+  @keyframes pulse{from{scale:1}to{scale:1.15}}
+  .spark{
+    position:fixed;z-index:60;pointer-events:none;line-height:1;
+  }
+
+  /* ---------- Password screen ---------- */
+  #lock{
+    position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
+    padding:20px;background:linear-gradient(135deg,#ffd1dc,#ff8fb1 50%,#c2185b);
+    transition:opacity .8s ease;
+  }
+  #lock.hide{opacity:0;pointer-events:none;}
+  .lock-box{
+    width:100%;max-width:420px;text-align:center;padding:34px 24px;
+    background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border:2px solid rgba(255,255,255,.8);border-radius:26px;
+    box-shadow:0 12px 40px rgba(142,27,74,.35);
+  }
+  .lock-box h1{font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(2.2rem,8vw,3.2rem);color:var(--deep);}
+  .lock-box p{margin:8px 0 20px;font-size:1.15rem;font-style:italic;}
+  .lock-box input{
+    width:100%;padding:14px 16px;font-size:1.1rem;font-family:inherit;text-align:center;
+    border:2px solid var(--rose);border-radius:50px;outline:none;background:var(--cream);color:var(--ink);
+  }
+  .lock-box input:focus{box-shadow:0 0 0 4px rgba(255,92,138,.3);}
+  .btn{
+    font-family:'Dancing Script',cursive;font-weight:700;font-size:1.3rem;
+    background:linear-gradient(135deg,#ff5c8a,#c2185b);color:#fff;border:none;
+    padding:11px 28px;border-radius:50px;cursor:pointer;
+    box-shadow:0 6px 16px rgba(194,24,91,.4);transition:transform .2s,box-shadow .2s,opacity .3s;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(194,24,91,.5);}
+  .btn:active{transform:scale(.96);}
+  .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+  #unlockBtn{margin-top:16px;width:100%;}
+  #err{min-height:26px;margin-top:12px;color:#b3003b;font-weight:600;font-size:1.1rem;}
+  .shake{animation:shake .45s;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}
+    40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}
+  }
+
+  /* ---------- Book ---------- */
+  #app{
+    position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));
+    opacity:0;pointer-events:none;transition:opacity .8s ease;z-index:10;
+  }
+  #app.show{opacity:1;pointer-events:auto;}
+  .card{
+    width:100%;max-width:820px;height:min(78dvh,78vh);
+    display:flex;flex-direction:column;
+    background:rgba(255,247,249,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    border:2px solid rgba(255,255,255,.9);border-radius:26px;
+    box-shadow:0 14px 45px rgba(142,27,74,.4);padding:clamp(18px,3.5vw,38px);
+  }
+  .book-title{
+    font-family:'Great Vibes',cursive;font-weight:400;text-align:center;color:var(--deep);
+    font-size:clamp(1.8rem,5.5vw,3rem);line-height:1.1;margin-bottom:10px;
+  }
+  .divider{text-align:center;color:var(--rose);letter-spacing:8px;margin-bottom:10px;font-size:.9rem;}
+  #page{
+    flex:1;overflow-y:auto;padding:4px 6px;transition:opacity .45s ease;
+    font-size:clamp(1.08rem,2.3vw,1.4rem);line-height:1.65;text-align:justify;
+    -webkit-overflow-scrolling:touch;
+  }
+  #page.fade{opacity:0;}
+  #page p::first-letter{
+    font-family:'Great Vibes',cursive;font-size:2.4em;color:var(--rose);line-height:.8;
+  }
+  #page.final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+  #page.final .by{font-family:'Dancing Script',cursive;font-size:clamp(1.8rem,6vw,3rem);color:var(--deep);}
+  #page.final .big{
+    font-family:'Great Vibes',cursive;font-size:clamp(2.3rem,9vw,4.8rem);color:var(--rose);
+    margin-top:26px;line-height:1.1;text-shadow:0 3px 12px rgba(255,92,138,.4);
+    animation:beat 1.4s ease-in-out infinite;
+  }
+  @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;}
+  .count{font-family:'Dancing Script',cursive;font-weight:700;font-size:1.25rem;color:var(--deep);text-align:center;}
+  .nav .btn{min-width:96px;padding:10px 18px;}
+  @media (max-width:480px){
+    .card{height:80dvh;height:80vh;border-radius:20px;}
+    #page{text-align:left;}
+    .nav .btn{min-width:84px;font-size:1.15rem;}
+  }
+  @media (max-height:520px){
+    .card{height:92dvh;height:92vh;}
+  }
+</style>
+</head>
+<body>
+
+<div id="hearts"></div>
+
+<!-- PASSWORD SCREEN -->
+<div id="lock">
+  <div class="lock-box" id="lockBox">
+    <h1>Falling For Siddhi 🪷</h1>
+    <p>Enter the secret password, my love</p>
+    <form id="lockForm" autocomplete="off">
+      <input type="password" id="pw" placeholder="Password" aria-label="Password" autocomplete="off">
+      <button type="submit" class="btn" id="unlockBtn">Open 💖</button>
+    </form>
+    <div id="err" role="alert"></div>
+  </div>
+</div>
+
+<!-- BOOK -->
+<div id="app">
+  <div class="card">
+    <div class="book-title" id="bookTitle">Falling For Siddhi 🪷</div>
+    <div class="divider">♥ ♥ ♥</div>
+    <div id="page"></div>
+    <div class="nav">
+      <button class="btn" id="prev">&larr; Back</button>
+      <div class="count" id="count"></div>
+      <button class="btn" id="next">Next &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= STORY ================= */
+  var PASSWORD = "SiddhiTheOneee";
+
+  var story = [
+`The first thought was exciting, never have I left this home country of mine. But I was anxious, waiting for an approval at the last moment isn't easy, and the anxiety kept growing. But I was accepted to go to Trinidad and Tobago. It felt like ages for my flight to come, but at 12:41 AM in the morning, I was in my dad's car along with my mom and sister, driving as I sang in my head "Lord I'm 1, Lord I'm 2, Lord I'm 3, Lord 4, Lord I'm 500 miles away from home." But I was nervous because I had never been in an aircraft. After hours of waiting in the airport we finally boarded. The flight was successful. I landed in Trinidad and Tobago successfully, and my friends and I were escorted to the "Kendra", and there is where our study would begin. I had the thought that nothing special would come my way, but boy was I wrong. Afterwards, we were greeted and settled into the place.`,
+
+`Fast forward two days into the study, there was a beautiful girl in red, and I told myself "She would never even date an inch of me". But that same day I was told "Yo bro, that girl in red is staring at you". I brushed it off and went about my day, but for the rest of my time in Trinidad and Tobago, it was out of this world in my opinion. This girl has the eyes of Lotus Petals, the voice of an Angel, and the presence of the divine itself. Staring into her eyes made me so nervous, my heart would beat way faster than normal, but it's hard to look away when those eyes carry a vast and celestial night sky. As time progressed, I fell more and more. At lunch, I was lying on a towel in the cold air conditioning, but I wasn't cold or anything. She came and asked me if I wanted a yoga mat and I rejected the offer because I was nervous at that time. After that we didn't have much of an interaction. Sometimes while I was acting, I would catch myself gazing into her eyes, my heart would race, and I would fumble my words. I was practicing a hand posture called "Sita Devi's Hand Posture"; I was doing it wrong because it was my first time, and she came and fixed my hands for me. That was the first touch, a touch that was so soft and innocent, her hands felt out of this world, heavenly. I slept that night like a child, without a single care in my heart, I slept.`,
+
+`My friends knew about me liking her, and they were trying their best to instigate every moment while I was shy. One time they all had seated so perfectly that the only seat available was next to her. While I was sitting next to her in singing class my heart was beating out of my chest, I was stuttering, it was as if I had forgotten how to speak. After the class was finished, I was talking to her as I fumbled my words. She didn't find it weird or anything, she just asked me "Why are you nervous?" I told her that I wasn't, but I was nervous. After that we started talking here and there, and then the next day we were in singing class again and I sat next to her and I was still singing like I didn't know how to speak, but during that class I built up the courage to hold her hands, and I did. I thought she would pull away or tell me something that would probably make me want to hide in a rabbit hole for the rest of my life, but she didn't say anything. As I held her hands, to my heart and soul I felt a touch that was like the petals of a Lotus Flower. My heart knew what it was like feeling a connection of two souls. I slept that night thinking of her, dreaming of her was the best part of the night, until the alarm went.`,
+
+`The day after I held her hands, we were in singing class again and I don't know what came into my mind to place my hand on her thigh. I thought she would curse at me or file a complaint, but she didn't. She was nervous, I was nervous, but I kept my hand there to stop her from shaking her legs. But I know it was wrong of me to do such a thing.`,
+
+`As the days progressed, I caught her staring at me often and it made me nervous all the time, because I'm a very shy guy, so I didn't know how to go up and talk to her. My friends were trying their best to get me to talk to her often, but I was afraid, afraid of what? I don't know. So one day as we were on break, I was sitting next to her and the other local students who are Trinidadians. I was scared to talk because I didn't know what to say, so I asked if she wanted to talk in a more private place and she said yes. So she and I got up and went somewhere private, and behind us, at the table where we had been sitting, everyone was overreacting and acting up, because of me and her walking off to talk privately. They knew that I was shy too. After we went and started talking, I couldn't stop staring into her eyes, eyes that have a blue that a man cannot explain in his own words. After that talk, I started to ignore her, not in the wrong way, I was still scared, I was still nervous and I was still a shy boy. But one afternoon one of her friends came, a guy, and he said "Please talk to my friend, she's worrying if she did something wrong". I assured him that she was not the problem, I was, and he just said "Go and talk to her bro".`,
+
+`So that afternoon I went and sat next to her on a bench and talked to her. I told her that her eyes looked beautiful, and I know that's not the way you start talking to someone after you ignored them for a while, so I apologized and explained myself to her because I didn't want it to look as if she had done anything wrong. Whilst we were talking and having the moment, we saw a construction worker staring at us from the second floor of the building our dorm was in, and trust me, it was weird, very weird, so I asked if she wanted to go on a walk, and she agreed. So we went on a walk, and walking next to her felt like walking amongst angels, the sun glaring in my eyes, her voice touching my heart. That Friday it was as if I had forgotten what my problems were while I was walking with her. If I could tell everyone in this world the feeling I felt, I would have to say it a thousand times and still not finish describing what love felt like for me. As I said to myself, if she must leave me, may no one ever seek the place she has in my heart again.`,
+
+`That afternoon ended well, her voice was still echoing in my ear and heart as I slept that night. The next day I sat next to her for lunch and I didn't say anything because I just didn't know what to say to her, even though I wasn't saying anything, I was enjoying her presence, a presence I would soon miss for days. Eating lunch with her educated me more about her, I know she doesn't like peas and vegetables now. After I became more comfortable around her, I talked to her very often, I talked to her about a lot of stuff about what I do when I'm in Guyana, to let her know more about me. My phone had broken, so I called her on one of my friend's phones to talk to her during the night. The first night we talked I told her so much about me and she told me more about her. It was getting late though, so I told her "I have to go to bed now, bye, I Love You". Crossing my fingers she wouldn't want to talk anymore, she said "I Love You Too", and boy I slept without a care in this world that night.`,
+
+`After that, one afternoon, as she was about to leave, I gave her a hug. I was a bit sweaty, but she didn't seem to mind at all. While I was hugging her, it felt like two hearts were touching each other, her hug had shifted something in me to love her more, more and more. The second time it happened, I think her parents saw, but I didn't care because I wanted to show them how my heart felt for their daughter, the unconditional feeling that my heart and mind have for her.`,
+
+`Sometimes while I was acting, she would look at me and look away, a look so innocent, a look that makes my eyes see a purpose to live a longer life, a look that confused my mind in the nicest way, a look that stole my heart, a look that started a fire in my heart to melt my heart away. A look that I want no one else to witness as long as I am alive. Eyes of the skies, I'd fall forever in them. Eyes of the celestial ocean, I'd swim in them forever. Eyes that have a meaning that simple words cannot explain, but if you asked my heart, it would tell a tale of the millennium we live in.`,
+
+`One afternoon I was busy chatting with the locals and some of my friends about how different our countries' culture, music and food are. As the conversation ended, she came up to me and said "Follow me", so I did. I wasn't expecting much, in my head I said to myself "She probably has something to tell me". But I was thousands of miles from being right. She hugged me and gave me something my heart would never have predicted in my lifetime, something that the universe had to stop and witness, a kiss, my first one. The explanation my heart has for that moment, I will have to limit myself of words. My heart said, out of all the women in this world it would be a crime for me to leave you, for you have already marked what belongs to you. It was as if the Divine Being had sent an angel to save me from losing hope of love, the stars had stopped in place to witness a moment that I believed would never come in a million years, the alteration in the Earth's rotation was noticeable. Because, after 15 years of searching for the perfect Lotus Flower, it wasn't a Flower, it is Siddhi, it is her, it is her presence, it is her eyes, it is her nose, it is her lips, it is everything about HER.`,
+
+`My time would soon come to an end on the island of Trinidad and Tobago. The last Saturday she came for me, she gave me a gift, a ring and a hand band. The last time I kissed her, I wanted to lose myself, that was my final touch of my Lotus Flower, I regret not kissing and hugging her more. "I Love You Siddhi!!!!" I always will. As I got onto that bus to go to the airport, my heart yearned for a final look at her eyes, my heart yearned for hugs again, my heart yearned for her kisses again, and as my story continues I still yearn for her. As I departed from the airport, I cried, not only a piece of my heart was left, my entire heart was left there and to this day it's still there and it will forever be with her. To see her one more time, all I wanted, every day my soul grows more and more sad and angry, not seeing my Lotus Flower is going to slowly be the end of me one day. I not only cried, I didn't eat, I didn't eat. My entire existence yells to be in her presence. I Love You Siddhi. If loving you was a crime, they would have to lock me in the world's most secure prison because I would kill to be in your presence.`
+  ];
+
+  // Last page = signature page
+  var TOTAL = story.length + 1;
+  var current = 0;
+  var busy = false;
+
+  /* ================= ELEMENTS ================= */
+  var lock = document.getElementById("lock");
+  var lockBox = document.getElementById("lockBox");
+  var lockForm = document.getElementById("lockForm");
+  var pw = document.getElementById("pw");
+  var err = document.getElementById("err");
+  var app = document.getElementById("app");
+  var page = document.getElementById("page");
+  var count = document.getElementById("count");
+  var prev = document.getElementById("prev");
+  var next = document.getElementById("next");
+  var bookTitle = document.getElementById("bookTitle");
+  var heartsLayer = document.getElementById("hearts");
+
+  /* ================= PASSWORD ================= */
+  lockForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    if (pw.value === PASSWORD) {
+      err.textContent = "";
+      lock.classList.add("hide");
+      app.classList.add("show");
+      render();
+    } else {
+      err.textContent = "You're Too Short My Love";
+      lockBox.classList.remove("shake");
+      void lockBox.offsetWidth; // restart animation
+      lockBox.classList.add("shake");
+      pw.value = "";
+      pw.focus();
+    }
+  });
+
+  /* ================= PAGES ================= */
+  function render(){
+    page.classList.remove("final");
+    page.scrollTop = 0;
+    if (current === TOTAL - 1) {
+      page.classList.add("final");
+      page.innerHTML =
+        '<div class="by">Jaiesh Sahadeo</div>' +
+        '<div class="big">I LOVE YOU SIDDHI</div>';
+    } else {
+      var p = document.createElement("p");
+      p.textContent = story[current];
+      page.innerHTML = "";
+      page.appendChild(p);
+    }
+    count.textContent = "Page " + (current + 1) + " of " + TOTAL;
+    prev.disabled = current === 0;
+    next.disabled = current === TOTAL - 1;
+    bookTitle.style.display = "";
+  }
+
+  function go(n){
+    if (busy || n < 0 || n >= TOTAL || n === current) return;
+    busy = true;
+    page.classList.add("fade");
+    setTimeout(function(){
+      current = n;
+      render();
+      page.classList.remove("fade");
+      setTimeout(function(){ busy = false; }, 450);
+    }, 450);
+  }
+
+  prev.addEventListener("click", function(){ go(current - 1); });
+  next.addEventListener("click", function(){ go(current + 1); });
+  document.addEventListener("keydown", function(e){
+    if (!app.classList.contains("show")) return;
+    if (e.key === "ArrowRight") go(current + 1);
+    if (e.key === "ArrowLeft") go(current - 1);
+  });
+
+  /* ================= HEARTS ================= */
+  var EMOJIS = ["💖","💗","💕","❤️","🩷","💘"];
+  var hearts = [];
+  var isSmall = Math.min(window.innerWidth, window.innerHeight) < 600;
+  var HEART_COUNT = isSmall ? 12 : 20;
+
+  function rand(a, b){ return a + Math.random() * (b - a); }
+
+  function spawnHeart(){
+    var el = document.createElement("div");
+    el.className = "heart";
+    el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    var size = isSmall ? rand(20, 30) : rand(18, 30);
+    el.style.fontSize = size + "px";
+    var h = {
+      el: el, size: size,
+      x: rand(5, Math.max(10, window.innerWidth - size - 5)),
+      y: rand(5, Math.max(10, window.innerHeight - size - 5)),
+      bx: rand(-0.5, 0.5), by: rand(-0.5, 0.5),
+      vx: 0, vy: 0, dead: false
+    };
+    h.vx = h.bx; h.vy = h.by;
+    el.addEventListener("pointerdown", function(e){
+      e.preventDefault();
+      popHeart(h);
+    });
+    heartsLayer.appendChild(el);
+    hearts.push(h);
+    place(h);
+  }
+
+  function place(h){
+    h.el.style.transform = "translate(" + h.x.toFixed(1) + "px," + h.y.toFixed(1) + "px)";
+  }
+
+  function burst(cx, cy, emoji, n){
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement("div");
+      s.className = "spark";
+      s.textContent = emoji;
+      s.style.fontSize = rand(10, 18) + "px";
+      s.style.left = cx + "px";
+      s.style.top = cy + "px";
+      document.body.appendChild(s);
+      var ang = (Math.PI * 2 * i) / n + rand(-0.3, 0.3);
+      var dist = rand(30, 70);
+      if (s.animate) {
+        var anim = s.animate([
+          { transform: "translate(0,0) scale(1)", opacity: 1 },
+          { transform: "translate(" + Math.cos(ang) * dist + "px," + Math.sin(ang) * dist + "px) scale(.2)", opacity: 0 }
+        ], { duration: 650, easing: "ease-out" });
+        (function(node){ anim.onfinish = function(){ node.remove(); }; })(s);
+      } else {
+        (function(node){ setTimeout(function(){ node.remove(); }, 650); })(s);
+      }
+    }
+  }
+
+  function popHeart(h){
+    if (h.dead) return;
+    h.dead = true;
+    burst(h.x + h.size / 2, h.y + h.size / 2, "💗", 7);
+    h.el.remove();
+    hearts = hearts.filter(function(x){ return x !== h; });
+    setTimeout(spawnHeart, 1500); // a new one drifts in
+  }
+
+  function flee(px, py){
+    for (var i = 0; i < hearts.length; i++) {
+      var h = hearts[i];
+      var cx = h.x + h.size / 2, cy = h.y + h.size / 2;
+      var dx = cx - px, dy = cy - py;
+      var d = Math.sqrt(dx * dx + dy * dy) || 1;
+      var R = 90;
+      if (d < R) {
+        var force = (R - d) / R * 5;
+        h.vx += (dx / d) * force;
+        h.vy += (dy / d) * force;
+        var sp = Math.sqrt(h.vx * h.vx + h.vy * h.vy);
+        if (sp > 7) { h.vx = h.vx / sp * 7; h.vy = h.vy / sp * 7; }
+      }
+    }
+  }
+
+  document.addEventListener("pointermove", function(e){
+    if (e.pointerType === "mouse") flee(e.clientX, e.clientY);
+  }, { passive: true });
+  document.addEventListener("touchmove", function(e){
+    if (e.touches && e.touches[0]) flee(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
+  function tick(){
+    var W = window.innerWidth, H = window.innerHeight;
+    for (var i = 0; i < hearts.length; i++) {
+      var h = hearts[i];
+      h.vx += (h.bx - h.vx) * 0.03;
+      h.vy += (h.by - h.vy) * 0.03;
+      h.x += h.vx;
+      h.y += h.vy;
+      var maxX = Math.max(0, W - h.size - 2), maxY = Math.max(0, H - h.size - 2);
+      if (h.x < 2) { h.x = 2; h.vx = Math.abs(h.vx); h.bx = Math.abs(h.bx); }
+      if (h.x > maxX) { h.x = maxX; h.vx = -Math.abs(h.vx); h.bx = -Math.abs(h.bx); }
+      if (h.y < 2) { h.y = 2; h.vy = Math.abs(h.vy); h.by = Math.abs(h.by); }
+      if (h.y > maxY) { h.y = maxY; h.vy = -Math.abs(h.vy); h.by = -Math.abs(h.by); }
+      place(h);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  for (var i = 0; i < HEART_COUNT; i++) spawnHeart();
+  requestAnimationFrame(tick);
+
+  /* ===== "Siddhi" heart that pops every 3 seconds ===== */
+  function siddhiHeart(){
+    if (document.hidden) return;
+    var W = window.innerWidth, H = window.innerHeight;
+    var size = isSmall ? 46 : 58;
+    var wrap = document.createElement("div");
+    wrap.className = "heart siddhi-heart";
+    wrap.innerHTML = '<div style="font-size:' + size + 'px;line-height:1">💖</div><span>Siddhi</span>';
+    var w = 100, hgt = size + 40;
+    var x = rand(10, Math.max(11, W - w - 10));
+    var y = rand(10, Math.max(11, H - hgt - 10));
+    wrap.style.transform = "translate(" + x + "px," + y + "px)";
+    var done = false;
+    function pop(){
+      if (done) return;
+      done = true;
+      burst(x + 50, y + size / 2, "💖", 10);
+      wrap.remove();
+    }
+    wrap.addEventListener("pointerdown", function(e){ e.preventDefault(); pop(); });
+    heartsLayer.appendChild(wrap);
+    setTimeout(pop, 2400);
+  }
+  setInterval(siddhiHeart, 3000);
+
+})();
+</script>
+</body>
+</html>
